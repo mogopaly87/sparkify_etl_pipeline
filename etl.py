@@ -28,44 +28,66 @@ from sql_queries import *
 
 def process_log_file(cur, filepath):
     # open log file
-    df =
+    df = pd.read_json(filepath, dtype=True, lines=True)
 
+    print(df.head(3))
     # filter by NextSong action
-    df =
+    # df = df.loc[df["page"] == "NextSong"]
 
-    # convert timestamp column to datetime
-    t =
+    # # convert timestamp column to datetime
+    # t = pd.to_datetime(df["ts"], unit="ms")
 
-    # insert time data records
-    time_data =
-    column_labels =
-    time_df =
+    # # insert time data records
+    # time_data = pd.concat(
+    #     [
+    #         t,
+    #         t.dt.hour,
+    #         t.dt.day,
+    #         t.dt.isocalendar().week,
+    #         t.dt.month,
+    #         t.dt.year,
+    #         t.dt.weekday,
+    #     ],
+    #     axis=1,
+    # )
+    # column_labels = ["start_time", "hour", "day", "week", "month", "year", "weekday"]
+    # time_data.columns = column_labels
+    # time_df = time_data
 
-    for i, row in time_df.iterrows():
-        cur.execute(time_table_insert, list(row))
+    # for i, row in time_df.iterrows():
+    #     cur.execute(time_table_insert, list(row))
 
-    # load user table
-    user_df =
+    # # load user table
+    # user_df = df[["userId", "firstName", "lastName", "gender", "level"]]
 
-    # insert user records
-    for i, row in user_df.iterrows():
-        cur.execute(user_table_insert, row)
+    # # insert user records
+    # for i, row in user_df.iterrows():
+    #     cur.execute(user_table_insert, row)
 
-    # insert songplay records
-    for index, row in df.iterrows():
+    # # insert songplay records
+    # for index, row in df.iterrows():
 
-        # get songid and artistid from song and artist tables
-        cur.execute(song_select, (row.song, row.artist, row.length))
-        results = cur.fetchone()
+    #     # get songid and artistid from song and artist tables
+    #     cur.execute(song_select, (row.song, row.artist, row.length))
+    #     results = cur.fetchone()
 
-        if results:
-            songid, artistid = results
-        else:
-            songid, artistid = None, None
+    #     if results:
+    #         songid, artistid = results
+    #     else:
+    #         songid, artistid = None, None
 
-        # insert songplay record
-        songplay_data =
-        cur.execute(songplay_table_insert, songplay_data)
+    #     # insert songplay record
+    #     songplay_data = (
+    #         pd.to_datetime(row.ts, unit="ms"),
+    #         row.userId,
+    #         row.level,
+    #         songid,
+    #         artistid,
+    #         row.sessionId,
+    #         row.location,
+    #         row.userAgent,
+    #     )
+    #     cur.execute(songplay_table_insert, songplay_data)
 
 
 def process_data(cur, conn, filepath, func):
@@ -93,8 +115,8 @@ def main():
     )
     cur = conn.cursor()
 
-    process_data(cur, conn, filepath="data/song_data", func=process_song_file)
-    # process_data(cur, conn, filepath="data/log_data", func=process_log_file)
+    # process_data(cur, conn, filepath="data/song_data", func=process_song_file)
+    process_data(cur, conn, filepath="data/log_data", func=process_log_file)
 
     conn.close()
 
