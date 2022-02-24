@@ -31,8 +31,8 @@ time_table_create = """
 
 
 songplay_table_create = """
-                        CREATE TABLE songplays (songplay_id SERIAL, start_time TIMESTAMP,
-                        user_id INT, level VARCHAR, song_id VARCHAR, artist_id VARCHAR,
+                        CREATE TABLE songplays (songplay_id SERIAL, start_time TIMESTAMP NOT NULL,
+                        user_id INT NOT NULL, level VARCHAR, song_id VARCHAR NOT NULL, artist_id VARCHAR NOT NULL,
                         session_id INT, location VARCHAR, user_agent VARCHAR(255),                        
                         PRIMARY KEY(songplay_id),
                         FOREIGN KEY (start_time) REFERENCES time(start_time),
@@ -52,12 +52,12 @@ songplay_table_insert = """
 
 user_table_insert = """
         INSERT INTO users (user_id, first_name, last_name, gender, level)
-        VALUES(%s, %s, %s, %s, %s) ON CONFLICT(user_id) DO NOTHING
+        VALUES(%s, %s, %s, %s, %s) ON CONFLICT(user_id) DO NOTHING UPDATE set level = EXCLUDED.level
 """
 
 song_table_insert = """
         INSERT INTO songs(song_id, title, artist_id, year, duration)
-        VALUES (%s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING
 """
 
 artist_table_insert = """
